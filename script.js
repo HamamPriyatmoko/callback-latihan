@@ -4,7 +4,30 @@ $.ajax({
     const movies = data.Search;
     let cards = '';
     movies.forEach((movie) => {
-      cards += `
+      cards += showCard(movie);
+    });
+    $('.movie-container').html(cards);
+    $('.modal-detail-button').on('click', function () {
+      // console.log($(this).data('imdbid'));
+      $.ajax({
+        url: `http://www.omdbapi.com/?apikey=f281c8b5&i=` + $(this).data('imdbid'),
+        success: function (data) {
+          const movieDetail = showDetail(data);
+          $('.modal-body').html(movieDetail);
+        },
+        error: function (error) {
+          console.log('Error:', error.responseText);
+        },
+      });
+    });
+  },
+  error: function (error) {
+    console.log('Error:', error.responseText);
+  },
+});
+
+function showCard(movie) {
+  return `
         <div class="col-md-4 my-5">
           <div class="card">
             <img src="${movie.Poster}" class="card-img-top" />
@@ -17,14 +40,10 @@ $.ajax({
           </div>
         </div>
             `;
-    });
-    $('.movie-container').html(cards);
-    $('.modal-detail-button').on('click', function () {
-      // console.log($(this).data('imdbid'));
-      $.ajax({
-        url: `http://www.omdbapi.com/?apikey=f281c8b5&i=` + $(this).data('imdbid'),
-        success: function (data) {
-          const movieDetail = `<div class="container-fluid">
+}
+
+function showDetail(data) {
+  return `<div class="container-fluid">
                 <div class="row">
                     <div class="col-md-3">
                         <img src="${data.Poster}" alt="" class="img-fluid"/>
@@ -40,15 +59,4 @@ $.ajax({
                     </div>
                 </div>
             </div>`;
-          $('.modal-body').html(movieDetail);
-        },
-        error: function (error) {
-          console.log('Error:', error.responseText);
-        },
-      });
-    });
-  },
-  error: function (error) {
-    console.log('Error:', error.responseText);
-  },
-});
+}
